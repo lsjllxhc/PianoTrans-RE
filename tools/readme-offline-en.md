@@ -28,6 +28,8 @@ If you move the folder and the prebuilt `venv50` stops working, run:
 PianoTrans-GPU50-Install.bat
 ```
 
+Use Settings -> Language to switch between Chinese and English.
+
 It recreates `venv50` from the bundled `python312` and installs every package
 from the bundled `wheels` directory without internet access.
 
@@ -51,6 +53,7 @@ python312\                  Portable Python 3.12 runtime
 venv50\                     Prebuilt Python environment
 wheels\                     All dependency wheels
 logo.png
+logo.ico
 LICENSE
 README.md
 README.zh-CN.md

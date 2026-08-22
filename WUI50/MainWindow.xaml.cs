@@ -15,6 +15,8 @@ public sealed partial class MainWindow : Window
         InitializeComponent();
         App.MainWindow = this;
         Title = "PianoTrans-RE";
+        LogoLoader.ApplyWindowIcon(AppWindow);
+        LocalizationService.Register(Root);
 
         SystemBackdrop = new MicaBackdrop
         {
@@ -64,7 +66,7 @@ public sealed partial class MainWindow : Window
 
     private void OnQueueError(string message)
     {
-        DispatcherQueue.TryEnqueue(() => _ = ShowErrorAsync("转录失败", message));
+        DispatcherQueue.TryEnqueue(() => _ = ShowErrorAsync(LocalizationService.T("转录失败"), message));
     }
 
     public async Task ShowErrorAsync(string title, string message)
@@ -83,7 +85,7 @@ public sealed partial class MainWindow : Window
                     },
                     MaxHeight = 400,
                 },
-                CloseButtonText = "关闭",
+                CloseButtonText = LocalizationService.T("关闭"),
                 XamlRoot = Root.XamlRoot,
             };
 

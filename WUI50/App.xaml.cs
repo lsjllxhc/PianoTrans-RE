@@ -50,6 +50,8 @@ public partial class App : Application
             StartPage = "about";
         }
 
+        LocalizationService.SetLanguage(Settings.Language);
+
         try
         {
             var dispatcher = DispatcherQueue.GetForCurrentThread();

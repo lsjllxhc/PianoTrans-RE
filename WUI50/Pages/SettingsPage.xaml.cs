@@ -2,6 +2,8 @@ using System.Diagnostics;
 using System.IO;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Navigation;
+using PianoTrans.WUI50.Services;
 using Windows.Storage.Pickers;
 
 namespace PianoTrans.WUI50.Pages;
@@ -11,7 +13,9 @@ public sealed partial class SettingsPage : Page
     public SettingsPage()
     {
         InitializeComponent();
+        LocalizationService.Register(this);
 
+        LanguageRadio.SelectedIndex = App.Settings.Language == "en-US" ? 1 : 0;
         DeviceRadio.SelectedIndex = App.Settings.DeviceMode == "cpu" ? 1 : 0;
         OutputFolderBox.Text = App.Settings.OutputFolder;
         MinNoteBox.Value = App.Settings.MinNoteDurationSeconds;
@@ -26,6 +30,18 @@ public sealed partial class SettingsPage : Page
         BpmBox.Value = App.Settings.MidiBpm;
         BatchSizeBox.Value = App.Settings.InferenceBatchSize;
         OverlapBox.Value = App.Settings.SegmentOverlapPercent;
+    }
+
+    private void LanguageRadio_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (OutputFolderBox is null)
+        {
+            return;
+        }
+
+        App.Settings.Language = LanguageRadio.SelectedIndex == 1 ? "en-US" : "zh-CN";
+        App.Settings.Save();
+        LocalizationService.SetLanguage(App.Settings.Language);
     }
 
     private void DeviceRadio_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -171,5 +187,11 @@ public sealed partial class SettingsPage : Page
             Info.Message = "输出文件夹无效，请重新选择。";
             Info.IsOpen = true;
         }
+    }
+
+    protected override void OnNavigatedTo(NavigationEventArgs e)
+    {
+        base.OnNavigatedTo(e);
+        LocalizationService.Apply(this);
     }
 }

@@ -32,6 +32,8 @@ Python 依赖由安装脚本联网下载。
 
 首次安装后会在应用旁生成 `venv50` 目录。
 
+设置页可以切换中文 / English 界面语言。
+
 ## 显卡支持
 
 - RTX 50 / Blackwell `sm_120`：通过 PyTorch 2.7.1 + CUDA 12.8 支持。
@@ -49,6 +51,7 @@ piano_transcription_inference_data\*.pth
 ffmpeg\ffmpeg.exe
 requirements-gpu50.txt
 logo.png
+logo.ico
 LICENSE
 README.md
 README.zh-CN.md

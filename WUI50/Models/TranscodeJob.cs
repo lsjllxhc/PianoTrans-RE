@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
+using PianoTrans.WUI50.Services;
 
 namespace PianoTrans.WUI50.Models;
 
@@ -99,14 +100,16 @@ public sealed class TranscodeJob : INotifyPropertyChanged
         }
     }
 
-    public string StatusText => Status switch
+    public string StatusText => LocalizationService.T(Status switch
     {
         JobStatus.Waiting => "等待中",
         JobStatus.Processing => "处理中",
         JobStatus.Completed => "已完成",
         JobStatus.Failed => "失败",
         _ => Status.ToString(),
-    };
+    });
+
+    public string StageText => LocalizationService.T(_stage);
 
     public bool IsIndeterminate => Status == JobStatus.Processing && Progress <= 0.5;
 

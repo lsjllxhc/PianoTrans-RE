@@ -35,6 +35,8 @@ logo.
 
 The first launch creates a `venv50` folder next to the app.
 
+Use Settings -> Language to switch between Chinese and English.
+
 ## GPU support
 
 - RTX 50 / Blackwell `sm_120`: supported through PyTorch 2.7.1 + CUDA 12.8.
@@ -52,6 +54,7 @@ piano_transcription_inference_data\*.pth
 ffmpeg\ffmpeg.exe
 requirements-gpu50.txt
 logo.png
+logo.ico
 LICENSE
 README.md
 README.zh-CN.md

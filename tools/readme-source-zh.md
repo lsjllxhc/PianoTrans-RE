@@ -36,6 +36,7 @@ requirements-gpu50.txt
 PianoTrans-GPU50-Install.bat   创建 venv50 并安装 PyTorch cu128 与依赖
 PianoTrans-RE.bat              构建并启动 WinUI 应用
 logo.png                       可替换的应用 Logo
+logo.ico                       Windows 应用图标
 README.md / README.zh-CN.md
 ```
 
@@ -68,6 +69,8 @@ PianoTrans-RE.bat
 ```
 
 ## 可调识别参数
+
+设置页可以切换中文 / English 界面语言。
 
 设置页提供 onset / offset / frame / 踏板阈值、峰值邻域、最短音符时长、
 分段重叠率、MIDI BPM、推理批大小等参数。帮助页有每个参数的详细解释。

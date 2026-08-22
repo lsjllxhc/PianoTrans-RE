@@ -32,6 +32,8 @@ public sealed class AppSettings
 
     public string DeviceMode { get; set; } = "gpu";
 
+    public string Language { get; set; } = "zh-CN";
+
     public string OutputFolder { get; set; } = "";
 
     public double MinNoteDurationSeconds { get; set; } = 0.05;
@@ -77,6 +79,7 @@ public sealed class AppSettings
             }
 
             DeviceMode = saved.DeviceMode is "gpu" or "cpu" ? saved.DeviceMode : "gpu";
+            Language = saved.Language is "zh-CN" or "en-US" ? saved.Language : "zh-CN";
             if (!string.IsNullOrWhiteSpace(saved.OutputFolder))
             {
                 OutputFolder = saved.OutputFolder;
@@ -142,6 +145,7 @@ public sealed class AppSettings
             var data = new SettingsData
             {
                 DeviceMode = DeviceMode,
+                Language = Language,
                 OutputFolder = OutputFolder,
                 MinNoteDurationSeconds = MinNoteDurationSeconds,
                 OnsetThreshold = OnsetThreshold,
@@ -167,6 +171,8 @@ public sealed class AppSettings
     private sealed class SettingsData
     {
         public string DeviceMode { get; set; } = "gpu";
+
+        public string Language { get; set; } = "zh-CN";
 
         public string OutputFolder { get; set; } = "";
 

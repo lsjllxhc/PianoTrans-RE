@@ -87,7 +87,7 @@
                             <TextBlock
                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                 Style="{StaticResource CaptionTextBlockStyle}"
-                                Text="{Binding Stage}" />
+                                Text="{Binding StageText}" />
                         </StackPanel>
 
                         <StackPanel Grid.Column="2" Spacing="3" VerticalAlignment="Center">

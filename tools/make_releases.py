@@ -396,6 +396,7 @@ def make_git() -> None:
     write_text(GIT_DIR / "README.md", SOURCE_README)
     write_text(GIT_DIR / "README.zh-CN.md", SOURCE_README_CN)
     copy_file(ROOT / "logo.png", GIT_DIR / "logo.png")
+    copy_file(ROOT / "logo.ico", GIT_DIR / "logo.ico")
     write_text(GIT_DIR / ".gitignore", GITIGNORE)
 
     sln = GIT_DIR / "PianoTrans-RE.sln"
@@ -441,6 +442,7 @@ def make_online() -> None:
     write_text(ONLINE_DIR / "README.md", ONLINE_README)
     write_text(ONLINE_DIR / "README.zh-CN.md", ONLINE_README_CN)
     copy_file(ROOT / "logo.png", ONLINE_DIR / "logo.png")
+    copy_file(ROOT / "logo.ico", ONLINE_DIR / "logo.ico")
 
     print(f"[ok] online release folder -> {ONLINE_DIR}")
 
@@ -503,6 +505,7 @@ def make_offline() -> None:
     write_text(OFFLINE_DIR / "README.md", OFFLINE_README)
     write_text(OFFLINE_DIR / "README.zh-CN.md", OFFLINE_README_CN)
     copy_file(ROOT / "logo.png", OFFLINE_DIR / "logo.png")
+    copy_file(ROOT / "logo.ico", OFFLINE_DIR / "logo.ico")
 
     print(f"[ok] offline release folder -> {OFFLINE_DIR}")
 

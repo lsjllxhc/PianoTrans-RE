@@ -54,7 +54,7 @@ public sealed class QueueManager
     public string PythonStatusText
         => _python.IsValid()
             ? $"Python: {_python.PythonExe}"
-            : $"Python 未找到: {_python.PythonExe}";
+            : LocalizationService.T("Python 未找到: ") + _python.PythonExe;
 
     public static bool IsSupportedMediaFile(string path)
         => SupportedExtensions.Contains(Path.GetExtension(path));
@@ -134,11 +134,11 @@ public sealed class QueueManager
 
         if (skipped > 0)
         {
-            InfoOccurred?.Invoke($"已跳过 {skipped} 个文件：不支持、已存在或已完成。");
+            InfoOccurred?.Invoke(LocalizationService.Format("已跳过 {0} 个文件：不支持、已存在或已完成。", skipped));
         }
         if (added > 0)
         {
-            InfoOccurred?.Invoke($"已添加 {added} 个文件到队列。");
+            InfoOccurred?.Invoke(LocalizationService.Format("已添加 {0} 个文件到队列。", added));
         }
     }
 
@@ -174,14 +174,15 @@ public sealed class QueueManager
         if (!_python.IsValid())
         {
             App.Log("StartAsync python invalid");
-            ErrorOccurred?.Invoke("未找到 Python 转录后端。\n\n请先运行 PianoTrans-GPU50-Install.bat，或检查 venv50 与 modern50\\PianoTrans-Worker.py 是否完整。");
+            ErrorOccurred?.Invoke(LocalizationService.T("未找到 Python 转录后端。\n\n请先运行 PianoTrans-GPU50-Install.bat，或检查 venv50 与 modern50\\PianoTrans-Worker.py 是否完整。"));
+
             return;
         }
 
         var batch = Jobs.Where(job => job.Status is JobStatus.Waiting or JobStatus.Failed).ToList();
         if (batch.Count == 0)
         {
-            InfoOccurred?.Invoke("队列里没有等待处理的任务。");
+            InfoOccurred?.Invoke(LocalizationService.T("队列里没有等待处理的任务。"));
             return;
         }
 
@@ -232,7 +233,8 @@ public sealed class QueueManager
                         current.Status = JobStatus.Failed;
                         current.ErrorMessage = LastStderr();
                     });
-                    ErrorOccurred?.Invoke($"转录进程异常退出（代码 {_process.ExitCode}）。\n\n{LastStderr()}");
+                    ErrorOccurred?.Invoke(LocalizationService.Format("转录进程异常退出（代码 {0}）。\n\n{1}", _process.ExitCode, LastStderr()));
+
                 }
             }
         }
@@ -249,7 +251,8 @@ public sealed class QueueManager
                 });
             }
 
-            ErrorOccurred?.Invoke("启动转录进程失败。\n\n" + ex.Message);
+            ErrorOccurred?.Invoke(LocalizationService.T("启动转录进程失败。\n\n") + ex.Message);
+
         }
         finally
         {
@@ -288,7 +291,7 @@ public sealed class QueueManager
             });
         }
 
-        InfoOccurred?.Invoke("已停止当前队列。");
+        InfoOccurred?.Invoke(LocalizationService.T("已停止当前队列。"));
     }
 
     private string WriteManifest(List<TranscodeJob> batch)
@@ -412,7 +415,8 @@ public sealed class QueueManager
                         job.ErrorMessage = message;
                         job.Stage = "错误";
                     });
-                    ErrorOccurred?.Invoke($"「{job.FileName}」转录失败。\n\n{message}");
+                    ErrorOccurred?.Invoke(LocalizationService.Format("「{0}」转录失败。\n\n{1}", job.FileName, message));
+
                     break;
                 }
 
@@ -421,7 +425,7 @@ public sealed class QueueManager
                     var device = root.TryGetProperty("device", out var d) ? d.GetString() ?? "" : "";
                     if (device == "cpu")
                     {
-                        _dispatcher.TryEnqueue(() => InfoOccurred?.Invoke("当前任务使用 CPU 推理。"));
+                        _dispatcher.TryEnqueue(() => InfoOccurred?.Invoke(LocalizationService.T("当前任务使用 CPU 推理。")));
                     }
                     break;
                 }
@@ -480,7 +484,7 @@ public sealed class QueueManager
         return Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(material)));
     }
 
-    private static string StageToChinese(string stage) => stage switch
+    private static string StageToChinese(string stage) => LocalizationService.T(stage switch
     {
         "audio" => "读取音频",
         "inference" => "推理中",
@@ -488,5 +492,5 @@ public sealed class QueueManager
         "write_midi" => "写入 MIDI",
         "完成" => "完成",
         _ => stage,
-    };
+    });
 }

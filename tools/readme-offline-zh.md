@@ -26,6 +26,8 @@ PianoTrans-RE.exe
 PianoTrans-GPU50-Install.bat
 ```
 
+设置页可以切换中文 / English 界面语言。
+
 脚本会用自带的 `python312` 和 `wheels` 完全离线重建环境。
 
 ## 显卡支持
@@ -48,6 +50,7 @@ python312\                 便携 Python 3.12
 venv50\                    预配置 Python 环境
 wheels\                    全部依赖 wheel
 logo.png
+logo.ico
 LICENSE
 README.md
 README.zh-CN.md

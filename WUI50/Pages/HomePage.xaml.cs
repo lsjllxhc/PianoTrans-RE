@@ -1,5 +1,6 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Navigation;
 using Microsoft.UI.Xaml.Input;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage;
@@ -16,6 +17,7 @@ public sealed partial class HomePage : Page
     public HomePage()
     {
         InitializeComponent();
+        LocalizationService.Register(this);
         JobsList.ItemsSource = Manager.Jobs;
         Manager.InfoOccurred += OnInfo;
         Manager.RunningChanged += OnRunningChanged;
@@ -99,7 +101,7 @@ public sealed partial class HomePage : Page
             var files = items.OfType<StorageFile>().Select(file => file.Path).ToList();
             if (files.Count == 0)
             {
-                ShowInfo("没有可添加的媒体文件。", InfoBarSeverity.Warning);
+                ShowInfo(LocalizationService.T("没有可添加的媒体文件。"), InfoBarSeverity.Warning);
             }
             else
             {
@@ -142,5 +144,11 @@ public sealed partial class HomePage : Page
     {
         var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(App.MainWindow);
         WinRT.Interop.InitializeWithWindow.Initialize(picker, hwnd);
+    }
+
+    protected override void OnNavigatedTo(NavigationEventArgs e)
+    {
+        base.OnNavigatedTo(e);
+        LocalizationService.Apply(this);
     }
 }

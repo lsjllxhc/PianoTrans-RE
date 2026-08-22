@@ -38,6 +38,7 @@ requirements-gpu50.txt
 PianoTrans-GPU50-Install.bat   Creates venv50 and installs PyTorch cu128 + deps
 PianoTrans-RE.bat              Builds and launches the WinUI app
 logo.png                       Replaceable application logo
+logo.ico                       Windows application icon
 README.md / README.zh-CN.md
 ```
 
@@ -75,6 +76,8 @@ PianoTrans-RE.bat
 The setup script downloads PyTorch 2.7.1+cu128 and the transcription packages.
 
 ## User-adjustable recognition settings
+
+The interface language can be switched between Chinese and English in Settings.
 
 The Settings page exposes onset/offset/frame/pedal thresholds, peak-picking
 neighbors, minimum note duration, segment overlap percentage, MIDI BPM and

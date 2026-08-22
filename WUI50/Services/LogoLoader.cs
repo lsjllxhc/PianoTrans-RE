@@ -1,5 +1,6 @@
 using System.IO;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml.Media.Imaging;
 
 namespace PianoTrans.WUI50.Services;
@@ -34,12 +35,43 @@ public static class LogoLoader
         }
     }
 
+    public static void ApplyWindowIcon(AppWindow appWindow)
+    {
+        try
+        {
+            var iconPath = FindIconPath();
+            if (iconPath is not null)
+            {
+                appWindow.SetIcon(iconPath);
+            }
+        }
+        catch
+        {
+            // Some Windows versions do not support runtime icon changes.
+        }
+    }
+
     private static string? FindLogoPath()
     {
         var current = new DirectoryInfo(AppContext.BaseDirectory);
         for (var dir = current; dir is not null; dir = dir.Parent)
         {
             var candidate = Path.Combine(dir.FullName, "logo.png");
+            if (File.Exists(candidate))
+            {
+                return candidate;
+            }
+        }
+
+        return null;
+    }
+
+    private static string? FindIconPath()
+    {
+        var current = new DirectoryInfo(AppContext.BaseDirectory);
+        for (var dir = current; dir is not null; dir = dir.Parent)
+        {
+            var candidate = Path.Combine(dir.FullName, "logo.ico");
             if (File.Exists(candidate))
             {
                 return candidate;

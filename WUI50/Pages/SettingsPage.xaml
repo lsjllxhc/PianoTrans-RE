@@ -16,6 +16,24 @@
                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                 BorderThickness="1"
                 CornerRadius="8">
+                <StackPanel Spacing="10">
+                    <RadioButtons
+                        x:Name="LanguageRadio"
+                        Header="界面语言"
+                        MaxColumns="2"
+                        SelectionChanged="LanguageRadio_SelectionChanged">
+                        <RadioButton Content="中文" />
+                        <RadioButton Content="English" />
+                    </RadioButtons>
+                </StackPanel>
+            </Border>
+
+            <Border
+                Padding="20"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="8">
                 <StackPanel Spacing="14">
                     <RadioButtons
                         x:Name="DeviceRadio"
@@ -23,8 +41,8 @@
                         MaxColumns="2"
                         SelectedIndex="0"
                         SelectionChanged="DeviceRadio_SelectionChanged">
-                        <x:String>GPU（50 系 / CUDA 12.8）</x:String>
-                        <x:String>CPU</x:String>
+                        <RadioButton Content="GPU（50 系 / CUDA 12.8）" />
+                        <RadioButton Content="CPU" />
                     </RadioButtons>
 
                     <TextBlock
