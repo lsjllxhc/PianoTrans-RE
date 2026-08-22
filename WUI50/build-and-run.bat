@@ -17,7 +17,7 @@ if not exist "%~dp0..\venv50\Scripts\python.exe" (
     if errorlevel 1 exit /b 1
 )
 
-echo Building PianoTrans WUI-50+ ...
+echo Building PianoTrans-RE ...
 "%MSBUILD%" PianoTrans.WUI50.csproj -restore -p:Configuration=Debug -p:Platform=x64
 if errorlevel 1 (
     echo [error] Build failed.
@@ -25,7 +25,7 @@ if errorlevel 1 (
     exit /b 1
 )
 
-set "EXE=%~dp0bin\x64\Debug\net8.0-windows10.0.26100.0\win-x64\PianoTrans-WUI50.exe"
+set "EXE=%~dp0bin\x64\Debug\net8.0-windows10.0.26100.0\win-x64\PianoTrans-RE.exe"
 if not exist "%EXE%" (
     echo [error] Build output not found: %EXE%
     pause

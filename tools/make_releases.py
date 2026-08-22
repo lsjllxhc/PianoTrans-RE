@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Build the three PianoTrans WUI-50+ distribution folders:
+Build the three PianoTrans-RE distribution folders:
 
   <repo>          source-only, for GitHub
   release-online  compiled app + model + ffmpeg, Python deps downloaded by user
@@ -44,7 +44,7 @@ FFMPEG_SRC = ROOT / "ffmpeg" / "ffmpeg.exe"
 VENV_SRC = ROOT / "venv50"
 WHEELS_SRC = ROOT / "wheels"
 
-SOURCE_README = """# PianoTrans WUI-50+
+SOURCE_README = """# PianoTrans-RE
 
 WinUI 3 native piano-transcription front end with an RTX 50 (Blackwell, sm_120)
 compatible PyTorch backend.
@@ -75,7 +75,7 @@ tools/
   make_releases.py             Builds git / release-online / release-offline folders
 requirements-gpu50.txt
 PianoTrans-GPU50-Install.bat   Creates venv50 and installs PyTorch cu128 + deps
-PianoTrans-WUI50.bat           Builds and launches the WinUI app
+PianoTrans-RE.bat           Builds and launches the WinUI app
 ```
 
 ## Build from source
@@ -108,11 +108,11 @@ Build and run:
 
 ```bat
 PianoTrans-GPU50-Install.bat
-PianoTrans-WUI50.bat
+PianoTrans-RE.bat
 ```
 
 The setup script downloads PyTorch 2.7.1+cu128 and the transcription packages.
-`PianoTrans-WUI50.bat` builds the WinUI app with MSBuild and starts it.
+`PianoTrans-RE.bat` builds the WinUI app with MSBuild and starts it.
 
 ## Notes
 
@@ -122,7 +122,7 @@ The setup script downloads PyTorch 2.7.1+cu128 and the transcription packages.
   keep their license/attribution when redistributing it.
 """
 
-ONLINE_README = """# PianoTrans WUI-50+ (Online installer release)
+ONLINE_README = """# PianoTrans-RE (Online installer release)
 
 This release contains the compiled WinUI 3 app, the pretrained model and
 ffmpeg. The Python runtime packages are **not** included and are downloaded by
@@ -144,10 +144,10 @@ the setup script.
 2. Double-click:
 
    ```text
-   PianoTrans-WUI50.exe
+   PianoTrans-RE.exe
    ```
 
-   or use `PianoTrans-WUI50.bat`.
+   or use `PianoTrans-RE.bat`.
 
 The first launch creates a `venv50` folder next to the app.
 
@@ -160,8 +160,8 @@ The first launch creates a `venv50` folder next to the app.
 ## Included files
 
 ```text
-PianoTrans-WUI50.exe         WinUI 3 application (self-contained)
-PianoTrans-WUI50.bat         Launcher that checks the Python backend first
+PianoTrans-RE.exe         WinUI 3 application (self-contained)
+PianoTrans-RE.bat         Launcher that checks the Python backend first
 PianoTrans-GPU50-Install.bat Downloads and installs Python dependencies
 modern50\\PianoTrans-Worker.py
 piano_transcription_inference_data\\*.pth
@@ -175,10 +175,10 @@ README.md
 - GPU is not detected: install a recent NVIDIA driver, then rerun the app.
 - CUDA error / no kernel image: use Settings -> CPU mode, or make sure
   `PianoTrans-GPU50-Install.bat` installed `torch 2.7.1+cu128`.
-- Log file: `%LOCALAPPDATA%\\PianoTrans-WUI50\\app.log`.
+- Log file: `%LOCALAPPDATA%\\PianoTrans-RE\\app.log`.
 """
 
-OFFLINE_README = """# PianoTrans WUI-50+ (Offline release)
+OFFLINE_README = """# PianoTrans-RE (Offline release)
 
 Everything is included in this folder: the compiled WinUI 3 app, the pretrained
 model, ffmpeg, Python 3.12, all dependency wheels and a ready-to-use `venv50`.
@@ -189,10 +189,10 @@ No internet connection is needed.
 Double-click:
 
 ```text
-PianoTrans-WUI50.exe
+PianoTrans-RE.exe
 ```
 
-or use `PianoTrans-WUI50.bat`.
+or use `PianoTrans-RE.bat`.
 
 If you move the folder and the prebuilt `venv50` stops working, run:
 
@@ -212,8 +212,8 @@ from the bundled `wheels` directory without internet access.
 ## Included files
 
 ```text
-PianoTrans-WUI50.exe         WinUI 3 application (self-contained)
-PianoTrans-WUI50.bat         Launcher
+PianoTrans-RE.exe         WinUI 3 application (self-contained)
+PianoTrans-RE.bat         Launcher
 PianoTrans-GPU50-Install.bat Offline dependency installer / repair tool
 modern50\\PianoTrans-Worker.py
 piano_transcription_inference_data\\*.pth
@@ -231,15 +231,15 @@ README.md
 - CUDA error / no kernel image: use Settings -> CPU mode.
 - If the app reports that Python was not found, run
   `PianoTrans-GPU50-Install.bat` once.
-- Log file: `%LOCALAPPDATA%\\PianoTrans-WUI50\\app.log`.
+- Log file: `%LOCALAPPDATA%\\PianoTrans-RE\\app.log`.
 """
 
 LAUNCHER_BAT = r"""@echo off
 setlocal
 cd /d "%~dp0"
 
-if not exist "%~dp0PianoTrans-WUI50.exe" (
-    echo [error] PianoTrans-WUI50.exe not found.
+if not exist "%~dp0PianoTrans-RE.exe" (
+    echo [error] PianoTrans-RE.exe not found.
     pause
     exit /b 1
 )
@@ -259,7 +259,7 @@ if errorlevel 1 (
 )
 
 :run
-start "" "%~dp0PianoTrans-WUI50.exe" %*
+start "" "%~dp0PianoTrans-RE.exe" %*
 exit /b 0
 """
 
@@ -269,7 +269,7 @@ chcp 65001 >nul
 cd /d "%~dp0"
 
 echo ============================================================
-echo  PianoTrans WUI-50+ offline dependency setup
+echo  PianoTrans-RE offline dependency setup
 echo ============================================================
 echo.
 
@@ -311,7 +311,7 @@ echo [3/3] Installing transcription packages from local wheels ...
 if errorlevel 1 goto :error
 
 echo.
-echo Offline setup finished. You can now run PianoTrans-WUI50.exe.
+echo Offline setup finished. You can now run PianoTrans-RE.exe.
 pause
 exit /b 0
 
@@ -344,10 +344,17 @@ __pycache__/
 """
 
 
-def clean(target: Path) -> None:
+def clean(target: Path, preserve: set[str] | None = None) -> None:
+    preserve = preserve or set()
     if target.exists():
-        shutil.rmtree(target)
-    target.mkdir(parents=True)
+        for child in target.iterdir():
+            if child.name in preserve:
+                continue
+            if child.is_dir() and not child.is_symlink():
+                shutil.rmtree(child)
+            else:
+                child.unlink(missing_ok=True)
+    target.mkdir(parents=True, exist_ok=True)
 
 
 def copy_tree(src: Path, dst: Path, ignore_names: set[str] | None = None) -> None:
@@ -373,7 +380,7 @@ def write_text(path: Path, text: str, newline: str = "\n") -> None:
 
 
 def make_git() -> None:
-    clean(GIT_DIR)
+    clean(GIT_DIR, preserve={".git", "LICENSE"})
 
     copy_tree(ROOT / "WUI50", GIT_DIR / "WUI50", {"bin", "obj", ".vs"})
     copy_tree(ROOT / "modern50", GIT_DIR / "modern50")
@@ -382,16 +389,18 @@ def make_git() -> None:
     for name in [
         "requirements-gpu50.txt",
         "PianoTrans-GPU50-Install.bat",
-        "PianoTrans-WUI50.bat",
+        "PianoTrans-RE.bat",
     ]:
         copy_file(ROOT / name, GIT_DIR / name)
 
     write_text(GIT_DIR / "README.md", SOURCE_README)
+    write_text(GIT_DIR / "README.zh-CN.md", SOURCE_README_CN)
+    copy_file(ROOT / "logo.png", GIT_DIR / "logo.png")
     write_text(GIT_DIR / ".gitignore", GITIGNORE)
 
-    sln = GIT_DIR / "PianoTrans-WUI50.sln"
+    sln = GIT_DIR / "PianoTrans-RE.sln"
     subprocess.run(
-        ["dotnet", "new", "sln", "-n", "PianoTrans-WUI50", "--format", "sln", "-o", str(GIT_DIR)],
+        ["dotnet", "new", "sln", "-n", "PianoTrans-RE", "--format", "sln", "-o", str(GIT_DIR)],
         check=False,
     )
     if not sln.exists():
@@ -406,7 +415,7 @@ def make_git() -> None:
 
 def copy_app_output(target: Path) -> None:
     for item in RELEASE_OUT.iterdir():
-        if item.name.endswith(".pdb"):
+        if item.name.endswith(".pdb") or "PianoTrans-WUI50" in item.name:
             continue
         dst = target / item.name
         if item.is_dir():
@@ -419,6 +428,8 @@ def make_online() -> None:
     clean(ONLINE_DIR)
 
     copy_app_output(ONLINE_DIR)
+    if (ROOT / "LICENSE").exists():
+        copy_file(ROOT / "LICENSE", ONLINE_DIR / "LICENSE")
     copy_tree(ROOT / "modern50", ONLINE_DIR / "modern50")
     copy_file(FFMPEG_SRC, ONLINE_DIR / "ffmpeg" / "ffmpeg.exe")
     copy_file(CHECKPOINT_SRC, ONLINE_DIR / "piano_transcription_inference_data" / CHECKPOINT_SRC.name)
@@ -426,8 +437,10 @@ def make_online() -> None:
     for name in ["requirements-gpu50.txt", "PianoTrans-GPU50-Install.bat"]:
         copy_file(ROOT / name, ONLINE_DIR / name)
 
-    write_text(ONLINE_DIR / "PianoTrans-WUI50.bat", LAUNCHER_BAT, newline="\r\n")
+    write_text(ONLINE_DIR / "PianoTrans-RE.bat", LAUNCHER_BAT, newline="\r\n")
     write_text(ONLINE_DIR / "README.md", ONLINE_README)
+    write_text(ONLINE_DIR / "README.zh-CN.md", ONLINE_README_CN)
+    copy_file(ROOT / "logo.png", ONLINE_DIR / "logo.png")
 
     print(f"[ok] online release folder -> {ONLINE_DIR}")
 
@@ -463,6 +476,8 @@ def make_offline() -> None:
     clean(OFFLINE_DIR)
 
     copy_app_output(OFFLINE_DIR)
+    if (ROOT / "LICENSE").exists():
+        copy_file(ROOT / "LICENSE", OFFLINE_DIR / "LICENSE")
     copy_tree(ROOT / "modern50", OFFLINE_DIR / "modern50")
     copy_file(FFMPEG_SRC, OFFLINE_DIR / "ffmpeg" / "ffmpeg.exe")
     copy_file(CHECKPOINT_SRC, OFFLINE_DIR / "piano_transcription_inference_data" / CHECKPOINT_SRC.name)
@@ -484,14 +499,16 @@ def make_offline() -> None:
         cfg.write_text(text, encoding="utf-8")
 
     write_text(OFFLINE_DIR / "PianoTrans-GPU50-Install.bat", OFFLINE_INSTALL_BAT, newline="\r\n")
-    write_text(OFFLINE_DIR / "PianoTrans-WUI50.bat", LAUNCHER_BAT, newline="\r\n")
+    write_text(OFFLINE_DIR / "PianoTrans-RE.bat", LAUNCHER_BAT, newline="\r\n")
     write_text(OFFLINE_DIR / "README.md", OFFLINE_README)
+    write_text(OFFLINE_DIR / "README.zh-CN.md", OFFLINE_README_CN)
+    copy_file(ROOT / "logo.png", OFFLINE_DIR / "logo.png")
 
     print(f"[ok] offline release folder -> {OFFLINE_DIR}")
 
 
 def main() -> None:
-    if not RELEASE_OUT.joinpath("PianoTrans-WUI50.exe").exists():
+    if not RELEASE_OUT.joinpath("PianoTrans-RE.exe").exists():
         print("[error] Release build not found. Build Release/x64 first.")
         print(f"        {RELEASE_OUT}")
         raise SystemExit(1)
@@ -505,6 +522,18 @@ def main() -> None:
     make_git()
     make_online()
     make_offline()
+
+
+def _load_template(name: str) -> str:
+    return (Path(__file__).with_name(name)).read_text(encoding="utf-8")
+
+
+SOURCE_README = _load_template("readme-source-en.md")
+SOURCE_README_CN = _load_template("readme-source-zh.md")
+ONLINE_README = _load_template("readme-online-en.md")
+ONLINE_README_CN = _load_template("readme-online-zh.md")
+OFFLINE_README = _load_template("readme-offline-en.md")
+OFFLINE_README_CN = _load_template("readme-offline-zh.md")
 
 
 if __name__ == "__main__":

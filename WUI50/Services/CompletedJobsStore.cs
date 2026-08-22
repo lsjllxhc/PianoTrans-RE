@@ -17,7 +17,7 @@ public sealed class CompletedJobsStore
     {
         var root = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "PianoTrans-WUI50");
+            "PianoTrans-RE");
         Directory.CreateDirectory(root);
         _path = Path.Combine(root, "completed-jobs.json");
         _entries = Load();

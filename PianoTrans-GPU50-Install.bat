@@ -4,7 +4,7 @@ chcp 65001 >nul
 cd /d "%~dp0"
 
 echo ============================================================
-echo  PianoTrans RTX 50 GPU environment setup
+echo  PianoTrans-RE dependency setup
 echo  (Python 3.12 venv + PyTorch 2.7.1 + cu128)
 echo ============================================================
 echo.
@@ -51,7 +51,7 @@ echo [4/4] Checking CUDA / GPU ...
 if errorlevel 1 goto :error
 
 echo.
-echo Setup finished. You can now double-click PianoTrans-GPU50.bat
+echo Setup finished. You can now double-click PianoTrans-RE.exe
 echo (or run it from the command line with audio/video file arguments).
 pause
 exit /b 0

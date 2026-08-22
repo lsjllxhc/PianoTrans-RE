@@ -48,10 +48,7 @@ import audioread
 import librosa
 import torch
 from piano_transcription_inference import PianoTranscription
-from piano_transcription_inference.utilities import (
-    RegressionPostProcessor,
-    write_events_to_midi,
-)
+from piano_transcription_inference.utilities import RegressionPostProcessor
 from piano_transcription_inference.pytorch_utils import move_data_to_device
 
 
@@ -145,7 +142,154 @@ def forward_with_progress(model, x, batch_size, on_progress):
     return output_dict
 
 
-def process_job(transcriptor, job, index, min_note_duration):
+def enframe_with_overlap(audio, segment_samples, overlap_percent):
+    """Cut audio into 10-second segments with a configurable overlap."""
+    overlap = min(75.0, max(0.0, float(overlap_percent)))
+    step_samples = max(160, int(round(segment_samples * (1.0 - overlap / 100.0) / 160.0) * 160))
+    batch = []
+    pointer = 0
+    while pointer + segment_samples <= audio.shape[1]:
+        batch.append(audio[:, pointer : pointer + segment_samples])
+        pointer += step_samples
+    if not batch:
+        batch.append(audio)
+    return np.concatenate(batch, axis=0), step_samples
+
+
+def overlap_add_outputs(output_dict, segment_count, seg_frames, step_samples, audio_len):
+    """Average predictions of overlapping segments instead of hard cropping."""
+    usable_frames = max(1, seg_frames - 1)  # drop the extra center-padding frame
+    frames_needed = max(1, int(np.ceil(audio_len / 160.0)))
+    result = {}
+
+    for key, value in output_dict.items():
+        value = value.reshape(segment_count, seg_frames, -1)
+        classes_num = value.shape[2]
+        accumulator = np.zeros((frames_needed, classes_num), dtype=np.float64)
+        counts = np.zeros((frames_needed, 1), dtype=np.float64)
+
+        for segment_index in range(segment_count):
+            start_frame = int(round(segment_index * step_samples / 160.0))
+            end_frame = min(frames_needed, start_frame + usable_frames)
+            if end_frame <= start_frame:
+                continue
+            segment_output = value[segment_index, : end_frame - start_frame, :]
+            accumulator[start_frame:end_frame] += segment_output
+            counts[start_frame:end_frame] += 1.0
+
+        result[key] = (accumulator / np.maximum(counts, 1.0)).astype(np.float32)
+
+    return result
+
+
+def postprocess_to_events(transcriptor, output_dict, params):
+    """Run thresholding / peak picking with user-adjustable parameters."""
+    post_processor = RegressionPostProcessor(
+        transcriptor.frames_per_second,
+        classes_num=transcriptor.classes_num,
+        onset_threshold=params["onset_threshold"],
+        offset_threshold=params["offset_threshold"],
+        frame_threshold=params["frame_threshold"],
+        pedal_offset_threshold=params["pedal_offset_threshold"],
+    )
+
+    output_dict = dict(output_dict)
+
+    onset_output, onset_shift = post_processor.get_binarized_output_from_regression(
+        output_dict["reg_onset_output"],
+        threshold=params["onset_threshold"],
+        neighbour=params["onset_peak_neighbor"],
+    )
+    output_dict["onset_output"] = onset_output
+    output_dict["onset_shift_output"] = onset_shift
+
+    offset_output, offset_shift = post_processor.get_binarized_output_from_regression(
+        output_dict["reg_offset_output"],
+        threshold=params["offset_threshold"],
+        neighbour=params["offset_peak_neighbor"],
+    )
+    output_dict["offset_output"] = offset_output
+    output_dict["offset_shift_output"] = offset_shift
+
+    if "reg_pedal_offset_output" in output_dict:
+        pedal_offset_output, pedal_offset_shift = post_processor.get_binarized_output_from_regression(
+            output_dict["reg_pedal_offset_output"],
+            threshold=params["pedal_offset_threshold"],
+            neighbour=params["pedal_offset_peak_neighbor"],
+        )
+        output_dict["pedal_offset_output"] = pedal_offset_output
+        output_dict["pedal_offset_shift_output"] = pedal_offset_shift
+
+    est_on_off_note_vels = post_processor.output_dict_to_detected_notes(output_dict)
+    est_note_events = post_processor.detected_notes_to_events(est_on_off_note_vels)
+
+    est_pedal_events = []
+    if "reg_pedal_offset_output" in output_dict:
+        est_pedal_on_offs = post_processor.output_dict_to_detected_pedals(output_dict)
+        est_pedal_events = post_processor.detected_pedals_to_events(est_pedal_on_offs)
+
+    return est_note_events, est_pedal_events
+
+
+def write_midi_with_bpm(start_time, note_events, pedal_events, midi_path, bpm):
+    """Write MIDI with a user-selected tempo (default 120 BPM)."""
+    from mido import Message, MidiFile, MidiTrack, MetaMessage
+
+    ticks_per_beat = 384
+    beats_per_second = max(1.0, bpm) / 60.0
+    ticks_per_second = ticks_per_beat * beats_per_second
+    microseconds_per_beat = int(round(60_000_000.0 / max(1.0, bpm)))
+
+    midi_file = MidiFile()
+    midi_file.ticks_per_beat = ticks_per_beat
+
+    track0 = MidiTrack()
+    track0.append(MetaMessage("set_tempo", tempo=microseconds_per_beat, time=0))
+    track0.append(MetaMessage("time_signature", numerator=4, denominator=4, time=0))
+    track0.append(MetaMessage("end_of_track", time=1))
+    midi_file.tracks.append(track0)
+
+    track1 = MidiTrack()
+    message_roll = []
+
+    for note_event in note_events:
+        velocity = int(round(float(note_event.get("velocity", 0))))
+        velocity = max(0, min(127, velocity))
+        message_roll.append({
+            "time": float(note_event["onset_time"]),
+            "midi_note": int(note_event["midi_note"]),
+            "velocity": velocity,
+        })
+        message_roll.append({
+            "time": float(note_event["offset_time"]),
+            "midi_note": int(note_event["midi_note"]),
+            "velocity": 0,
+        })
+
+    for pedal_event in pedal_events or []:
+        message_roll.append({"time": float(pedal_event["onset_time"]), "control_change": 64, "value": 127})
+        message_roll.append({"time": float(pedal_event["offset_time"]), "control_change": 64, "value": 0})
+
+    message_roll.sort(key=lambda item: item["time"])
+
+    previous_ticks = 0
+    for message in message_roll:
+        this_ticks = int((message["time"] - start_time) * ticks_per_second)
+        if this_ticks < 0:
+            continue
+        diff_ticks = max(0, this_ticks - previous_ticks)
+        previous_ticks = this_ticks
+        if "midi_note" in message:
+            track1.append(Message("note_on", note=message["midi_note"], velocity=message["velocity"], time=diff_ticks))
+        elif "control_change" in message:
+            track1.append(Message("control_change", channel=0, control=message["control_change"], value=message["value"], time=diff_ticks))
+
+    track1.append(MetaMessage("end_of_track", time=1))
+    midi_file.tracks.append(track1)
+    midi_file.save(midi_path)
+
+
+def process_job(transcriptor, job, index, params):
     input_path = job.get("input")
     output_path = job.get("output")
     emit({"type": "job_start", "index": index, "input": input_path, "output": output_path})
@@ -163,7 +307,11 @@ def process_job(transcriptor, job, index, min_note_duration):
             - audio_len
         )
         audio = np.concatenate((audio, np.zeros((1, pad_len))), axis=1)
-        segments = transcriptor.enframe(audio, transcriptor.segment_samples)
+        segments, step_samples = enframe_with_overlap(
+            audio,
+            transcriptor.segment_samples,
+            params.get("segment_overlap_percent", 50),
+        )
 
         def on_segment(fraction):
             # Audio load + inference occupy 2%..88% of the visible progress.
@@ -174,23 +322,18 @@ def process_job(transcriptor, job, index, min_note_duration):
                 "stage": "inference",
             })
 
-        output_dict = forward_with_progress(transcriptor.model, segments, 1, on_segment)
+        batch_size = max(1, int(params.get("batch_size", 1)))
+        output_dict = forward_with_progress(transcriptor.model, segments, batch_size, on_segment)
 
         emit({"type": "progress", "index": index, "progress": 0.90, "stage": "postprocess"})
-        for key in output_dict.keys():
-            output_dict[key] = transcriptor.deframe(output_dict[key])[0:audio_len]
+        segment_count = len(segments)
+        seg_frames = next(iter(output_dict.values())).shape[0] // segment_count
+        output_dict = overlap_add_outputs(output_dict, segment_count, seg_frames, step_samples, audio_len)
 
-        post_processor = RegressionPostProcessor(
-            transcriptor.frames_per_second,
-            classes_num=transcriptor.classes_num,
-            onset_threshold=transcriptor.onset_threshold,
-            offset_threshold=transcriptor.offset_threshod,
-            frame_threshold=transcriptor.frame_threshold,
-            pedal_offset_threshold=transcriptor.pedal_offset_threshold,
-        )
-        est_note_events, est_pedal_events = post_processor.output_dict_to_midi_events(output_dict)
+        est_note_events, est_pedal_events = postprocess_to_events(transcriptor, output_dict, params)
 
         raw_notes = len(est_note_events)
+        min_note_duration = params["min_note_duration"]
         filtered = [
             event
             for event in est_note_events
@@ -202,11 +345,12 @@ def process_job(transcriptor, job, index, min_note_duration):
         if output_path:
             out_dir = os.path.dirname(os.path.abspath(output_path))
             os.makedirs(out_dir, exist_ok=True)
-            write_events_to_midi(
+            write_midi_with_bpm(
                 start_time=0,
                 note_events=filtered,
                 pedal_events=est_pedal_events,
                 midi_path=output_path,
+                bpm=params["bpm"],
             )
 
         emit({
@@ -243,10 +387,22 @@ def run_manifest(manifest):
     if actual_device != device:
         emit({"type": "device", "device": actual_device})
 
-    min_note_duration = float(manifest.get("min_note_duration", 0.05))
+    params = {
+        "min_note_duration": float(manifest.get("min_note_duration", 0.05)),
+        "onset_threshold": float(manifest.get("onset_threshold", 0.30)),
+        "offset_threshold": float(manifest.get("offset_threshold", 0.30)),
+        "frame_threshold": float(manifest.get("frame_threshold", 0.10)),
+        "pedal_offset_threshold": float(manifest.get("pedal_offset_threshold", 0.20)),
+        "onset_peak_neighbor": int(manifest.get("onset_peak_neighbor", 2)),
+        "offset_peak_neighbor": int(manifest.get("offset_peak_neighbor", 4)),
+        "pedal_offset_peak_neighbor": int(manifest.get("pedal_offset_peak_neighbor", 4)),
+        "bpm": float(manifest.get("bpm", 120)),
+        "batch_size": int(manifest.get("batch_size", 1)),
+        "segment_overlap_percent": float(manifest.get("segment_overlap_percent", 50)),
+    }
     jobs = manifest.get("jobs", [])
     for index, job in enumerate(jobs):
-        process_job(transcriptor, job, index, min_note_duration)
+        process_job(transcriptor, job, index, params)
 
     emit({"type": "worker_done"})
 

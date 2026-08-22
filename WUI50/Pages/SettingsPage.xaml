@@ -88,6 +88,136 @@
                 </StackPanel>
             </Border>
 
+            <Border
+                Padding="20"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="8">
+                <StackPanel Spacing="14">
+                    <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="识别参数" />
+
+                    <Grid ColumnSpacing="12" RowSpacing="12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <NumberBox
+                            x:Name="OnsetThresholdBox"
+                            Grid.Column="0"
+                            Header="Onset 阈值"
+                            Minimum="0.01"
+                            Maximum="0.99"
+                            SmallChange="0.01"
+                            SpinButtonPlacementMode="Inline" />
+                        <NumberBox
+                            x:Name="OffsetThresholdBox"
+                            Grid.Column="1"
+                            Header="Offset 阈值"
+                            Minimum="0.01"
+                            Maximum="0.99"
+                            SmallChange="0.01"
+                            SpinButtonPlacementMode="Inline" />
+                        <NumberBox
+                            x:Name="FrameThresholdBox"
+                            Grid.Column="2"
+                            Header="Frame 阈值"
+                            Minimum="0.01"
+                            Maximum="0.99"
+                            SmallChange="0.01"
+                            SpinButtonPlacementMode="Inline" />
+                        <NumberBox
+                            x:Name="PedalOffsetThresholdBox"
+                            Grid.Column="3"
+                            Header="踏板 Offset"
+                            Minimum="0.01"
+                            Maximum="0.99"
+                            SmallChange="0.01"
+                            SpinButtonPlacementMode="Inline" />
+                    </Grid>
+
+                    <Grid ColumnSpacing="12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <NumberBox
+                            x:Name="OnsetNeighborBox"
+                            Grid.Column="0"
+                            Header="Onset 峰值邻域"
+                            Minimum="1"
+                            Maximum="8"
+                            SmallChange="1"
+                            SpinButtonPlacementMode="Inline" />
+                        <NumberBox
+                            x:Name="OffsetNeighborBox"
+                            Grid.Column="1"
+                            Header="Offset 峰值邻域"
+                            Minimum="1"
+                            Maximum="8"
+                            SmallChange="1"
+                            SpinButtonPlacementMode="Inline" />
+                        <NumberBox
+                            x:Name="PedalNeighborBox"
+                            Grid.Column="2"
+                            Header="踏板峰值邻域"
+                            Minimum="1"
+                            Maximum="8"
+                            SmallChange="1"
+                            SpinButtonPlacementMode="Inline" />
+                    </Grid>
+
+                    <Grid ColumnSpacing="12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <NumberBox
+                            x:Name="BpmBox"
+                            Grid.Column="0"
+                            Header="MIDI BPM"
+                            Minimum="20"
+                            Maximum="300"
+                            SmallChange="1"
+                            SpinButtonPlacementMode="Inline" />
+                        <NumberBox
+                            x:Name="OverlapBox"
+                            Grid.Column="1"
+                            Header="分段重叠率 (%)"
+                            Minimum="0"
+                            Maximum="75"
+                            SmallChange="5"
+                            SpinButtonPlacementMode="Inline" />
+                        <NumberBox
+                            x:Name="BatchSizeBox"
+                            Grid.Column="2"
+                            Header="推理批大小"
+                            Minimum="1"
+                            Maximum="8"
+                            SmallChange="1"
+                            SpinButtonPlacementMode="Inline" />
+                        <Button
+                            Grid.Column="3"
+                            VerticalAlignment="Bottom"
+                            Click="ResetRecognition_Click"
+                            Content="恢复默认" />
+                    </Grid>
+
+                    <TextBlock
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Style="{StaticResource CaptionTextBlockStyle}"
+                        Text="重叠率越高，段边界错误越少但推理越慢；0 表示无重叠、速度最快。帮助页有每个参数的详细说明。" />
+                </StackPanel>
+            </Border>
+
             <Button
                 x:Name="SaveButton"
                 Click="Save_Click"

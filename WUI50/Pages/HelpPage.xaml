@@ -1,0 +1,165 @@
+<Page
+    x:Class="PianoTrans.WUI50.Pages.HelpPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    NavigationCacheMode="Required"
+    Background="Transparent">
+
+    <ScrollViewer Padding="28,20,28,20">
+        <StackPanel MaxWidth="820" HorizontalAlignment="Left" Spacing="12">
+            <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="帮助" />
+            <TextBlock
+                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                Text="以下参数都位于「设置 → 识别参数」中，点击「保存设置」后对新开始的队列生效。"
+                TextWrapping="Wrap" />
+
+            <Border
+                Padding="20"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="8">
+                <StackPanel Spacing="10">
+                    <TextBlock TextWrapping="Wrap" Style="{StaticResource BodyStrongTextBlockStyle}" Text="推理设备" />
+                    <TextBlock TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="GPU：优先使用 NVIDIA 显卡，50 系使用 CUDA 12.8 / sm_120；无可用 GPU 时自动退回 CPU。" />
+                    <TextBlock TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="CPU：强制使用处理器推理，速度较慢但兼容性最好。" />
+                </StackPanel>
+            </Border>
+
+            <Border
+                Padding="20"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="8">
+                <StackPanel Spacing="10">
+                    <TextBlock TextWrapping="Wrap" Style="{StaticResource BodyStrongTextBlockStyle}" Text="输出文件夹" />
+                    <TextBlock TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="所有生成的 MIDI 都写入这个文件夹，文件名与输入媒体文件同名。" />
+                </StackPanel>
+            </Border>
+
+            <Border
+                Padding="20"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="8">
+                <StackPanel Spacing="10">
+                    <TextBlock TextWrapping="Wrap" Style="{StaticResource BodyStrongTextBlockStyle}" Text="Onset 阈值" />
+                    <TextBlock TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="判断一个音符何时开始。调低会识别出更多音符，但可能把噪声或泛音误判成新音符；调高则相反。默认 0.30。" />
+                </StackPanel>
+            </Border>
+
+            <Border
+                Padding="20"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="8">
+                <StackPanel Spacing="10">
+                    <TextBlock TextWrapping="Wrap" Style="{StaticResource BodyStrongTextBlockStyle}" Text="Offset 阈值" />
+                    <TextBlock TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="判断一个音符何时结束。调低更容易结束音符，调高则音符可能被延长。默认 0.30。" />
+                </StackPanel>
+            </Border>
+
+            <Border
+                Padding="20"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="8">
+                <StackPanel Spacing="10">
+                    <TextBlock TextWrapping="Wrap" Style="{StaticResource BodyStrongTextBlockStyle}" Text="Frame 阈值" />
+                    <TextBlock TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="判断某个音高在当前帧是否仍在响。该值会影响长音是否被中途切断。默认 0.10。" />
+                </StackPanel>
+            </Border>
+
+            <Border
+                Padding="20"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="8">
+                <StackPanel Spacing="10">
+                    <TextBlock TextWrapping="Wrap" Style="{StaticResource BodyStrongTextBlockStyle}" Text="踏板 Offset 阈值" />
+                    <TextBlock TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="判断延音踏板何时松开。调低会让踏板释放更敏感，调高会让踏板延长。默认 0.20。" />
+                </StackPanel>
+            </Border>
+
+            <Border
+                Padding="20"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="8">
+                <StackPanel Spacing="10">
+                    <TextBlock TextWrapping="Wrap" Style="{StaticResource BodyStrongTextBlockStyle}" Text="峰值邻域" />
+                    <TextBlock TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="在候选点前后检查多少帧都保持单调，才算一个真正的 onset / offset 峰。邻域越大越抗噪，但快速连续音符可能被合并；邻域越小越灵敏，但容易重复检测。默认：onset 2，offset 4，踏板 4。" />
+                </StackPanel>
+            </Border>
+
+            <Border
+                Padding="20"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="8">
+                <StackPanel Spacing="10">
+                    <TextBlock TextWrapping="Wrap" Style="{StaticResource BodyStrongTextBlockStyle}" Text="最短音符时长" />
+                    <TextBlock TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="持续时间小于该值的音符不会写入 MIDI。用于过滤误检碎片音。默认 0.05 秒。" />
+                </StackPanel>
+            </Border>
+
+            <Border
+                Padding="20"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="8">
+                <StackPanel Spacing="10">
+                    <TextBlock TextWrapping="Wrap" Style="{StaticResource BodyStrongTextBlockStyle}" Text="分段重叠率" />
+                    <TextBlock TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="音频按 10 秒一段送入模型，相邻段之间可以重叠。重叠越高，段边界越稳定、准确率通常越好，但段数增多、推理变慢；0 表示不重叠、速度最快。默认 50%。" />
+                </StackPanel>
+            </Border>
+
+            <Border
+                Padding="20"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="8">
+                <StackPanel Spacing="10">
+                    <TextBlock TextWrapping="Wrap" Style="{StaticResource BodyStrongTextBlockStyle}" Text="MIDI BPM" />
+                    <TextBlock TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="写入 MIDI 的速度值。只影响 MIDI 在宿主软件里的网格显示，不改变识别结果。默认 120。" />
+                </StackPanel>
+            </Border>
+
+            <Border
+                Padding="20"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="8">
+                <StackPanel Spacing="10">
+                    <TextBlock TextWrapping="Wrap" Style="{StaticResource BodyStrongTextBlockStyle}" Text="推理批大小" />
+                    <TextBlock TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="一次送入多少 10 秒片段。GPU 可尝试 2～4 提高速度，代价是更多显存；CPU 建议保持 1。" />
+                </StackPanel>
+            </Border>
+
+            <Border
+                Padding="20"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="8">
+                <StackPanel Spacing="10">
+                    <TextBlock TextWrapping="Wrap" Style="{StaticResource BodyStrongTextBlockStyle}" Text="调参建议" />
+                    <TextBlock TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="多音：适当调高 Onset / Frame 阈值，或增大最短音符时长。" />
+                    <TextBlock TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="漏音：适当调低 Onset / Frame 阈值，并减小 onset 峰值邻域。" />
+                    <TextBlock TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="结束点不准：优先微调 Offset 阈值和 Frame 阈值。" />
+                    <TextBlock TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="段边界问题：提高分段重叠率。" />
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

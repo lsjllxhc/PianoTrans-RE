@@ -15,14 +15,44 @@
                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                 BorderThickness="1"
                 CornerRadius="8">
-                <StackPanel Spacing="8">
-                    <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="PianoTrans WUI-50+" />
+                <StackPanel Spacing="12">
+                    <StackPanel Orientation="Horizontal" Spacing="16">
+                        <Image
+                            x:Name="LogoImage"
+                            Width="72"
+                            Height="72"
+                            Stretch="Uniform" />
+                        <StackPanel Spacing="4">
+                            <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="PianoTrans-RE" />
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Text="版本 v0.2" />
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Text="更新时间：2026-08-23" />
+                        </StackPanel>
+                    </StackPanel>
+
                     <TextBlock
+                        TextWrapping="Wrap"
                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                         Text="WinUI 3 原生界面 / PyTorch 2.7.1 + CUDA 12.8 转录后端" />
                     <TextBlock
+                        TextWrapping="Wrap"
                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                        Text="支持 RTX 50 系列（Blackwell, sm_120）以及更早的支持 CUDA 的 NVIDIA 显卡。" />
+                        Text="支持 RTX 50 系列（Blackwell, sm_120）以及更早的支持 CUDA 的 NVIDIA 显卡，无 CUDA 时自动使用 CPU。" />
+
+                    <HyperlinkButton
+                        Padding="0"
+                        NavigateUri="https://github.com/lsjllxhc/PianoTrans-RE"
+                        Content="GitHub：https://github.com/lsjllxhc/PianoTrans-RE" />
+
+                    <TextBlock TextWrapping="Wrap" Style="{StaticResource BodyStrongTextBlockStyle}" Text="License" />
+                    <TextBlock
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Text="GNU General Public License v3.0 (GPL-3.0)"
+                        TextWrapping="Wrap" />
+
                     <TextBlock
                         x:Name="BackendStatus"
                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
@@ -37,10 +67,11 @@
                 BorderThickness="1"
                 CornerRadius="8">
                 <StackPanel Spacing="8">
-                    <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="使用说明" />
-                    <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="• 主页：打开 / 拖入媒体文件，按「开始」处理队列，按「停止」中止。" />
-                    <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="• 已完成的任务会记录在本机，下次打开不会重复处理。" />
-                    <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="• 设置：切换 GPU / CPU、输出目录、最短音符过滤时长。" />
+                    <TextBlock TextWrapping="Wrap" Style="{StaticResource BodyStrongTextBlockStyle}" Text="使用说明" />
+                    <TextBlock TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="• 主页：打开 / 拖入媒体文件，按「开始」处理队列，按「停止」中止。" />
+                    <TextBlock TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="• 已完成的任务会记录在本机，下次打开不会重复处理。" />
+                    <TextBlock TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="• 设置：切换 GPU / CPU、输出目录、识别参数、最短音符过滤、分段重叠率。" />
+                    <TextBlock TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="• 帮助：查看每个识别参数的含义。" />
                 </StackPanel>
             </Border>
         </StackPanel>

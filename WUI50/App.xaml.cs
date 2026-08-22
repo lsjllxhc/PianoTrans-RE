@@ -28,6 +28,8 @@ public partial class App : Application
 
     public static bool AutoStart { get; private set; }
 
+    public static string StartPage { get; private set; } = "home";
+
     protected override void OnLaunched(LaunchActivatedEventArgs args)
     {
         var commandLine = Environment.GetCommandLineArgs().Skip(1).ToList();
@@ -35,6 +37,18 @@ public partial class App : Application
             .Where(path => !path.StartsWith("--") && File.Exists(path) && QueueManager.IsSupportedMediaFile(path))
             .ToList();
         AutoStart = commandLine.Contains("--start") || commandLine.Contains("--autostart");
+        if (commandLine.Contains("--settings"))
+        {
+            StartPage = "settings";
+        }
+        else if (commandLine.Contains("--help"))
+        {
+            StartPage = "help";
+        }
+        else if (commandLine.Contains("--about"))
+        {
+            StartPage = "about";
+        }
 
         try
         {
@@ -71,7 +85,7 @@ public partial class App : Application
 
     public static string LogPath { get; } = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-        "PianoTrans-WUI50",
+        "PianoTrans-RE",
         "app.log");
 
     public static void Log(string message)

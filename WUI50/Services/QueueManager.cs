@@ -295,7 +295,7 @@ public sealed class QueueManager
     {
         var runDir = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "PianoTrans-WUI50",
+            "PianoTrans-RE",
             "runs");
         Directory.CreateDirectory(runDir);
 
@@ -304,6 +304,16 @@ public sealed class QueueManager
         {
             device = _settings.DeviceMode,
             min_note_duration = _settings.MinNoteDurationSeconds,
+            onset_threshold = _settings.OnsetThreshold,
+            offset_threshold = _settings.OffsetThreshold,
+            frame_threshold = _settings.FrameThreshold,
+            pedal_offset_threshold = _settings.PedalOffsetThreshold,
+            onset_peak_neighbor = _settings.OnsetPeakNeighbor,
+            offset_peak_neighbor = _settings.OffsetPeakNeighbor,
+            pedal_offset_peak_neighbor = _settings.PedalOffsetPeakNeighbor,
+            bpm = _settings.MidiBpm,
+            batch_size = _settings.InferenceBatchSize,
+            segment_overlap_percent = _settings.SegmentOverlapPercent,
             checkpoint = _python.CheckpointPath,
             jobs = batch.Select(job => new
             {

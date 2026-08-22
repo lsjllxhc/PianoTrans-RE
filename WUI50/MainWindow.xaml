@@ -12,6 +12,14 @@
             PaneDisplayMode="Left"
             SelectionChanged="Nav_SelectionChanged">
 
+            <NavigationView.PaneHeader>
+                <TextBlock
+                    Padding="12,14,12,8"
+                    VerticalAlignment="Center"
+                    FontWeight="SemiBold"
+                    Text="PianoTrans-RE" />
+            </NavigationView.PaneHeader>
+
             <NavigationView.MenuItems>
                 <NavigationViewItem Content="主页" Tag="home">
                     <NavigationViewItem.Icon>
@@ -25,13 +33,18 @@
                 </NavigationViewItem>
             </NavigationView.MenuItems>
 
-            <NavigationView.PaneFooter>
+            <NavigationView.FooterMenuItems>
+                <NavigationViewItem Content="帮助" Tag="help">
+                    <NavigationViewItem.Icon>
+                        <SymbolIcon Symbol="Help" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
                 <NavigationViewItem Content="关于" Tag="about">
                     <NavigationViewItem.Icon>
                         <SymbolIcon Symbol="Help" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-            </NavigationView.PaneFooter>
+            </NavigationView.FooterMenuItems>
 
             <Frame x:Name="ContentFrame" />
         </NavigationView>

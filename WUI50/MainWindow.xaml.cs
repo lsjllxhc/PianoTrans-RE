@@ -3,6 +3,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Composition.SystemBackdrops;
 using PianoTrans.WUI50.Pages;
+using PianoTrans.WUI50.Services;
 using Windows.Graphics;
 
 namespace PianoTrans.WUI50;
@@ -13,7 +14,7 @@ public sealed partial class MainWindow : Window
     {
         InitializeComponent();
         App.MainWindow = this;
-        Title = "PianoTrans WUI-50+";
+        Title = "PianoTrans-RE";
 
         SystemBackdrop = new MicaBackdrop
         {
@@ -28,7 +29,10 @@ public sealed partial class MainWindow : Window
         }
 
         Closed += (_, _) => App.Queue?.Stop();
-        Nav.SelectedItem = Nav.MenuItems.OfType<NavigationViewItem>().FirstOrDefault(item => (string?)item.Tag == "home");
+        var navItems = Nav.MenuItems.OfType<NavigationViewItem>()
+            .Concat(Nav.FooterMenuItems.OfType<NavigationViewItem>()).ToList();
+        Nav.SelectedItem = navItems.FirstOrDefault(item => (string?)item.Tag == App.StartPage)
+            ?? navItems.FirstOrDefault(item => (string?)item.Tag == "home");
     }
 
     private void Nav_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
@@ -44,10 +48,18 @@ public sealed partial class MainWindow : Window
             case "settings":
                 ContentFrame.Navigate(typeof(SettingsPage));
                 break;
+            case "help":
+                ContentFrame.Navigate(typeof(HelpPage));
+                break;
             case "about":
                 ContentFrame.Navigate(typeof(AboutPage));
                 break;
         }
+    }
+
+    private void HelpFooter_Click(object sender, RoutedEventArgs e)
+    {
+        ContentFrame.Navigate(typeof(HelpPage));
     }
 
     private void OnQueueError(string message)
