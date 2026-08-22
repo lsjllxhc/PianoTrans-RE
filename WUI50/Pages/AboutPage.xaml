@@ -1,0 +1,48 @@
+<Page
+    x:Class="PianoTrans.WUI50.Pages.AboutPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    NavigationCacheMode="Required"
+    Background="Transparent">
+
+    <ScrollViewer Padding="28,20,28,20">
+        <StackPanel MaxWidth="760" HorizontalAlignment="Left" Spacing="12">
+            <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="关于" />
+
+            <Border
+                Padding="20"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="8">
+                <StackPanel Spacing="8">
+                    <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="PianoTrans WUI-50+" />
+                    <TextBlock
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Text="WinUI 3 原生界面 / PyTorch 2.7.1 + CUDA 12.8 转录后端" />
+                    <TextBlock
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Text="支持 RTX 50 系列（Blackwell, sm_120）以及更早的支持 CUDA 的 NVIDIA 显卡。" />
+                    <TextBlock
+                        x:Name="BackendStatus"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
+
+            <Border
+                Padding="20"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="8">
+                <StackPanel Spacing="8">
+                    <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="使用说明" />
+                    <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="• 主页：打开 / 拖入媒体文件，按「开始」处理队列，按「停止」中止。" />
+                    <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="• 已完成的任务会记录在本机，下次打开不会重复处理。" />
+                    <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="• 设置：切换 GPU / CPU、输出目录、最短音符过滤时长。" />
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

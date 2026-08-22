@@ -1,0 +1,19 @@
+# Build output
+WUI50/bin/
+WUI50/obj/
+.vs/
+*.user
+*.suo
+
+# Python environment and downloaded dependencies
+venv50/
+wheels/
+
+# Large binary assets that are distributed through releases
+piano_transcription_inference_data/*.pth
+ffmpeg/
+
+# Local user output
+out/
+__pycache__/
+*.pyc
