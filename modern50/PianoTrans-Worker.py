@@ -119,6 +119,81 @@ def _append_output(output_dict, key, value):
         output_dict[key] = [value]
 
 
+def _accumulate_segment_outputs(accumulators, counts, outputs, base_segment_index, step_samples, frames_needed):
+    """Overlap-add one model batch into float32 accumulators."""
+    for key, value in outputs.items():
+        value = value.data.cpu().numpy()
+        batch_size, seg_frames, classes_num = value.shape
+        usable_frames = max(1, seg_frames - 1)
+
+        if key not in accumulators:
+            accumulators[key] = np.zeros((frames_needed, classes_num), dtype=np.float32)
+            counts[key] = np.zeros((frames_needed, 1), dtype=np.float32)
+
+        for i in range(batch_size):
+            segment_index = base_segment_index + i
+            start_frame = segment_index * step_samples // 160
+            end_frame = min(frames_needed, start_frame + usable_frames)
+            if end_frame <= start_frame:
+                continue
+            accumulators[key][start_frame:end_frame] += value[i, : end_frame - start_frame, :]
+            counts[key][start_frame:end_frame] += 1.0
+
+
+def forward_segments_with_overlap(model, audio, segment_samples, step_samples, batch_size, audio_len, on_progress):
+    """Stream segments through the model and overlap-add predictions immediately.
+
+    This intentionally avoids storing every segment and every model output at
+    the same time, which was the cause of the previous memory explosion on
+    long audio files.
+    """
+    padded_len = audio.shape[1]
+    frames_needed = max(1, int(np.ceil(audio_len / 160.0)))
+    total_segments = 1 + (padded_len - segment_samples) // step_samples if padded_len >= segment_samples else 1
+
+    accumulators = {}
+    counts = {}
+    pointer = 0
+    completed = 0
+    device = next(model.parameters()).device
+
+    while pointer + segment_samples <= padded_len:
+        batch = []
+        while len(batch) < batch_size and pointer + segment_samples <= padded_len:
+            batch.append(audio[:, pointer : pointer + segment_samples])
+            pointer += step_samples
+
+        batch_count = len(batch)
+        try:
+            batch_waveform = move_data_to_device(np.concatenate(batch, axis=0), device)
+            with torch.no_grad():
+                model.eval()
+                batch_output_dict = model(batch_waveform)
+            _accumulate_segment_outputs(accumulators, counts, batch_output_dict, completed, step_samples, frames_needed)
+            del batch_waveform, batch_output_dict
+        except torch.cuda.OutOfMemoryError:
+            torch.cuda.empty_cache()
+            print("GPU out of memory for batch size {}, retrying this batch one segment at a time.".format(batch_count), flush=True)
+            for i in range(batch_count):
+                single_waveform = move_data_to_device(batch[i], device)
+                with torch.no_grad():
+                    model.eval()
+                    single_output = model(single_waveform)
+                _accumulate_segment_outputs(accumulators, counts, single_output, completed + i, step_samples, frames_needed)
+                del single_waveform, single_output
+            torch.cuda.empty_cache()
+
+        del batch
+        completed += batch_count
+        on_progress(min(1.0, completed / float(total_segments)))
+
+    result = {}
+    for key, accumulator in accumulators.items():
+        result[key] = (accumulator / np.maximum(counts[key], 1.0)).astype(np.float32)
+
+    return result
+
+
 def forward_with_progress(model, x, batch_size, on_progress):
     """Same mini-batch loop as piano_transcription_inference, with progress."""
     output_dict = {}
@@ -307,10 +382,10 @@ def process_job(transcriptor, job, index, params):
             - audio_len
         )
         audio = np.concatenate((audio, np.zeros((1, pad_len))), axis=1)
-        segments, step_samples = enframe_with_overlap(
-            audio,
-            transcriptor.segment_samples,
-            params.get("segment_overlap_percent", 50),
+        overlap_percent = min(75.0, max(0.0, float(params.get("segment_overlap_percent", 50))))
+        step_samples = max(
+            160,
+            int(round(transcriptor.segment_samples * (1.0 - overlap_percent / 100.0) / 160.0) * 160),
         )
 
         def on_segment(fraction):
@@ -323,12 +398,17 @@ def process_job(transcriptor, job, index, params):
             })
 
         batch_size = max(1, int(params.get("batch_size", 1)))
-        output_dict = forward_with_progress(transcriptor.model, segments, batch_size, on_segment)
+        output_dict = forward_segments_with_overlap(
+            transcriptor.model,
+            audio,
+            transcriptor.segment_samples,
+            step_samples,
+            batch_size,
+            audio_len,
+            on_segment,
+        )
 
         emit({"type": "progress", "index": index, "progress": 0.90, "stage": "postprocess"})
-        segment_count = len(segments)
-        seg_frames = next(iter(output_dict.values())).shape[0] // segment_count
-        output_dict = overlap_add_outputs(output_dict, segment_count, seg_frames, step_samples, audio_len)
 
         est_note_events, est_pedal_events = postprocess_to_events(transcriptor, output_dict, params)
 

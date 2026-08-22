@@ -56,7 +56,13 @@ public sealed class TranscodeJob : INotifyPropertyChanged
     public string Stage
     {
         get => _stage;
-        set => SetProperty(ref _stage, value);
+        set
+        {
+            if (SetProperty(ref _stage, value))
+            {
+                OnPropertyChanged(nameof(StageText));
+            }
+        }
     }
 
     private string _errorMessage = "";
